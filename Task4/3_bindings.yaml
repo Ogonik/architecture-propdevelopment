@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: List
+items:
+- kind: ClusterRoleBinding
+  apiVersion: rbac.authorization.k8s.io/v1
+  metadata:
+    name: admin-user
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: cluster-admin
+  subjects:
+  - kind: ServiceAccount
+    name: admin-user
+    namespace: kubernetes-dashboard
+
+- kind: ClusterRoleBinding
+  apiVersion: rbac.authorization.k8s.io/v1
+  metadata:
+    name: cd-runner_binding
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: cd-runner
+  subjects:
+  - kind: ServiceAccount
+    name: sa-cd-runner
+    namespace: kubernetes-dashboard
+    
+- kind: RoleBinding
+  apiVersion: rbac.authorization.k8s.io/v1
+  metadata:
+    name: sa-reader_binding
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: namespace-read-all
+  subjects:
+  - kind: ServiceAccount
+    name: sa-reader
+    namespace: default
+  - kind: ServiceAccount
+    name: sa-reader
+    namespace: kubernetes-dashboard
