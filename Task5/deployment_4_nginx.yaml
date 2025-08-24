@@ -1,0 +1,216 @@
+# namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: 4nginx
+  labels:
+    name: 4nginx
+---
+
+#frontend
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: default
+  labels:
+    app: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: frontend-app
+    spec:
+      containers:
+      - name: frontend-app
+        image: bitnami/nginx:1.29.0-debian-12-r2
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8081
+        resources:
+          limits:
+            cpu: "300m"
+            memory: "64Mi"
+      restartPolicy: Always
+---
+
+
+#frontend-service
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: default
+spec:
+  selector:
+    app: frontend-app
+  ports:
+  - port: 8081
+    targetPort: 8081
+  type: ClusterIP
+---
+
+
+#frontend-admin
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-admin
+  namespace: default
+  labels:
+    app: frontend-admin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend-admin-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: frontend-admin-app
+    spec:
+      containers:
+      - name: frontend-admin-app
+        image: bitnami/nginx:1.29.0-debian-12-r2
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8881
+        resources:
+          limits:
+            cpu: "300m"
+            memory: "64Mi"
+      restartPolicy: Always
+---
+
+#frontend-admin-service
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-admin
+  namespace: default
+spec:
+  selector:
+    app: frontend-admin-app
+  ports:
+  - port: 8881
+    targetPort: 8881
+  type: ClusterIP
+---
+
+
+#backend
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-api
+  namespace: default
+  labels:
+    app: backend-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-api-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: backend-api-app
+    spec:
+      containers:
+      - name: backend-api-app
+        image: bitnami/nginx:1.29.0-debian-12-r2
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8880
+        resources:
+          limits:
+            cpu: "300m"
+            memory: "64Mi"
+      restartPolicy: Always
+      
+#frontend-admin-service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-api
+  namespace: default
+spec:
+  selector:
+    app: backend-api-app
+  ports:
+  - port: 8080
+    targetPort: 8080
+  type: ClusterIP
+---
+
+  
+#backend-api-admin
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-api-admin
+  namespace: default
+  labels:
+    app: backend-api-admin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-api-admin-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: backend-api-admin-app
+    spec:
+      containers:
+      - name: backend-api-admin-app
+        image: bitnami/nginx:1.29.0-debian-12-r2
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8880
+        resources:
+          limits:
+            cpu: "300m"
+            memory: "64Mi"
+      restartPolicy: Always
+---
+
+#frontend-admin-service
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-api-admin
+  namespace: default
+spec:
+  selector:
+    app: backend-api-admin-app
+  ports:
+  - port: 8880
+    targetPort: 8880
+  type: ClusterIP
+---
